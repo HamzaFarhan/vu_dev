@@ -1,0 +1,30 @@
+I have a course outline and I have the table of contents of a book.
+The book should cover all of the topics in the course outline. So it's important to know which topics are covered in the book and which are not.
+Let's compare the topics in the course outline with the topics in the book.
+As a detail oriented expert on finding differences between academic content, give me 2 lists:
+    1. Topics from the course outline covered in the book:
+        - List all the topics that are in the course outline and are covered in the book.
+        - I don't just want the topics from the book, I want the topics from the course outline that are covered in the book.
+        - ONLY list the topics that are in both the course outline and the book.
+        - For each topic, give me the chapter number if you can find it.
+    2. Topics from the course outline not covered in the book:
+        - List all the topics from the course outline that are not covered in the book.
+I want the lists in a markdown code block that I can easily copy.
+Be as thorough as you can in your investigation.
+
+Here is the course outline:
+
+Introduction to Coordinates, Graphs and Lines
+Basic concepts of Distance, circles and Quadratic Equations
+Function, its operations and Graphs
+Introduction to limit and its computational techniques
+Continuity and its application for different functions
+Tangent Line, Rate of Change and Derivatives 
+Applications of Derivatives of different functions using different techniques 
+Newton’s Method , Rolle’s Theorem and Mean Value Theorem
+Introduction to Integration and Area problem with its applications
+L’Hopital’s Rule
+Introduction to Sequence and Series its computational techniques
+Convergence Test for sequence and series
+
+Now wait for me to give you the table of contents of the book.

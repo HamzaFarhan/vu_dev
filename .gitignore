@@ -1,0 +1,6 @@
+/.venv
+/README.md
+/poetry.lock
+/pyproject.toml
+/tests
+/vu_dev
