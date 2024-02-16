@@ -10,11 +10,15 @@ from pydantic import BaseModel, Field
 from tenacity import RetryError, Retrying, stop_after_attempt
 from termcolor import colored
 
-marvin.settings.openai.chat.completions.model = ModelName.GPT_3
-marvin.settings.openai.chat.completions.temperature = 0.3
-
+ATTEMPTS = 3
+MODEL_NAME = ModelName.GPT_3
+MODEL_TEMPERATURE = 0.3
+COURSE_NAME = "101"
 COURSES_FOLDER = "courses"
 COMPARISONS_NAME = "comparisons"
+
+marvin.settings.openai.chat.completions.model = MODEL_NAME
+marvin.settings.openai.chat.completions.temperature = MODEL_TEMPERATURE
 
 
 class Comparison(BaseModel):
@@ -34,9 +38,10 @@ class Comparison(BaseModel):
 
 
 def gen_comparisons(
-    course_name: str = "101",
+    course_name: str = COURSE_NAME,
     courses_folder: str | Path = COURSES_FOLDER,
-    attempts: int = 3,
+    attempts: int = ATTEMPTS,
+    oai_model: str = MODEL_NAME,
 ) -> dict:
     course_folder = Path(courses_folder) / course_name
     course_prompt = course_folder / f"{course_name}_prompt.txt"
@@ -47,7 +52,7 @@ def gen_comparisons(
         comparison_df = pd.read_excel(course_comaprisons_file)
         compared_books = comparison_df["Book"].unique().tolist()
     comparisons = {}
-    asker = partial(ask_oai, model=ModelName.GPT_3)
+    asker = partial(ask_oai, model=oai_model)
     for course_toc in course_toc_folder.glob("*.txt"):
         if course_toc.stem in compared_books:
             continue
@@ -81,7 +86,7 @@ def gen_comparisons(
 
 
 def gen_comparisons_excel(
-    course_name: str = "101", courses_folder: str | Path = COURSES_FOLDER
+    course_name: str = COURSE_NAME, courses_folder: str | Path = COURSES_FOLDER
 ) -> pd.DataFrame:
     comparisons = gen_comparisons(
         course_name=course_name, courses_folder=courses_folder
