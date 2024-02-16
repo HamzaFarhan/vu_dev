@@ -4,3 +4,4 @@
 /pyproject.toml
 /tests
 /vu_dev
+__pycache__

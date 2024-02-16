@@ -3,11 +3,12 @@ from pathlib import Path
 
 import marvin
 import pandas as pd
-from pydantic import BaseModel, Field
-
 from dreamai_gen.asking import ask
 from dreamai_gen.llms import ModelName, ask_oai
 from dreamai_gen.utils import deindent
+from pydantic import BaseModel, Field
+from tenacity import RetryError, Retrying, stop_after_attempt
+from termcolor import colored
 
 marvin.settings.openai.chat.completions.model = ModelName.GPT_3
 marvin.settings.openai.chat.completions.temperature = 0.3
@@ -33,7 +34,9 @@ class Comparison(BaseModel):
 
 
 def gen_comparisons(
-    course_name: str = "101", courses_folder: str | Path = COURSES_FOLDER
+    course_name: str = "101",
+    courses_folder: str | Path = COURSES_FOLDER,
+    attempts: int = 3,
 ) -> dict:
     course_folder = Path(courses_folder) / course_name
     course_prompt = course_folder / f"{course_name}_prompt.txt"
@@ -48,12 +51,23 @@ def gen_comparisons(
     for course_toc in course_toc_folder.glob("*.txt"):
         if course_toc.stem in compared_books:
             continue
-        comparison = ask(
-            course_prompt,
-            course_toc,
-            {"data": asker},
-            {"comparison": partial(marvin.cast, target=Comparison)},
-        ).get("comparison")
+        try:
+            for attempt in Retrying(stop=stop_after_attempt(attempts)):
+                with attempt:
+                    comparison = ask(
+                        course_prompt,
+                        course_toc,
+                        {"data": asker},
+                        {"comparison": partial(marvin.cast, target=Comparison)},
+                    ).get("comparison")
+        except RetryError:
+            print(
+                colored(
+                    f"Failed to compare {course_toc.stem} after {attempts} attempts.",
+                    "red",
+                )
+            )
+            continue
         if comparison:
             comparison = comparison.model_dump()
             max_len = max([len(v) for v in comparison.values()])
